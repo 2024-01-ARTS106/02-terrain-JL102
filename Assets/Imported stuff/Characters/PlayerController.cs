@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     float horizontalMovement, forwardMovement;
     public float jumpForce = 50f;
     public float walkSpeed = 1f;
+    private float forceMultiple = 100;
     public AnimationState anim;
     bool moving;
     Animator animator;
@@ -28,7 +29,7 @@ public class PlayerController : MonoBehaviour
         horizontalMovement = Input.GetAxis("Horizontal");
         forwardMovement = Input.GetAxis("Vertical");
 
-        Vector3 direction = new Vector3(horizontalMovement * walkSpeed, 0f, forwardMovement * walkSpeed);
+        Vector3 direction = new Vector3(horizontalMovement * walkSpeed * forceMultiple, 0f, forwardMovement * walkSpeed * forceMultiple);
         rb.AddForce(direction);
 
         moving = Input.GetButton("Horizontal") || Input.GetButton("Vertical");
@@ -38,14 +39,16 @@ public class PlayerController : MonoBehaviour
         {
             body.transform.rotation = Quaternion.LookRotation(direction);
         }
-        animator.SetBool("moving", moving);
+        animator.SetBool("running", moving);
     }
 
     void Update()
     {
         if (Input.GetButtonDown("Jump"))
         {
-            rb.AddForce(new Vector3(0f, jumpForce, 0f));
+            rb.AddForce(new Vector3(0f, jumpForce * forceMultiple, 0f));
+            animator.SetBool("inAir", true);
+            animator.SetTrigger("startJump");
         }
     }
 }
